@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Money Manager - Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/luxon@3.3.0/build/global/luxon.min.js"></script>
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-content">
+      <div class="logo">💰 Money Manager</div>
+      <div class="nav-links">
+        <a href="index.html" class="active">Trang chủ</a>
+        <a href="news.html">Tin tức</a>
+        <a href="auth.html" id="loginLink">Đăng nhập</a>   
+        <button id="logoutBtn" class="btn btn-secondary" style="display:none">Đăng xuất</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <!-- HEADER -->
+    <header class="dashboard-header">
+      <div class="date-picker">
+        <button class="btn btn-icon" onclick="changeMonth(-1)" aria-label="Tháng trước">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="15 18 9 12 15 6"></polyline>
+          </svg>
+        </button>
+
+        <div class="date-selectors">
+          <select id="monthSelect" class="form-input" onchange="handleMonthYearChange()" aria-label="Chọn tháng"></select>
+          <select id="yearSelect" class="form-input" onchange="handleMonthYearChange()" aria-label="Chọn năm"></select>
+        </div>
+
+        <button class="btn btn-icon" onclick="changeMonth(1)" aria-label="Tháng sau">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </button>
+      </div>
+      <button class="btn btn-primary" onclick="showTransactionForm()">+ Thêm giao dịch</button>
+
+    </header>
+
+    <!-- FORM THÊM/SỬA -->
+    <section id="transactionFormContainer" class="transaction-form" style="display: none;">
+      <form id="transactionForm" onsubmit="handleSubmit(event)">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="type">Loại giao dịch</label>
+            <select class="form-input" id="type" required>
+              <option value="">Chọn loại</option>
+              <option value="income">Thu nhập</option>
+              <option value="expense">Chi tiêu</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="amount">Số tiền (VND)</label>
+            <input type="number" class="form-input" id="amount" required />
+          </div>
+          <div class="form-group">
+            <label for="category">Danh mục</label>
+            <select class="form-input" id="category" required>
+              <option value="salary">Lương</option>
+              <option value="food">Ăn uống</option>
+              <option value="transport">Di chuyển</option>
+              <option value="bill">Hóa đơn</option>
+              <option value="shopping">Mua sắm</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="date">Ngày</label>
+            <input type="date" class="form-input" id="date" required />
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="note">Ghi chú</label>
+          <textarea class="form-input" id="note" rows="3"></textarea>
+        </div>
+        <div class="form-group form-actions">
+          <button type="submit" class="btn btn-primary" id="saveButton">Lưu</button>
+          <button type="button" class="btn" onclick="hideTransactionForm()">Hủy</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- THỐNG KÊ -->
+    <section class="dashboard-grid">
+      <div class="summary-card">
+        <h3>Tổng thu nhập</h3>
+        <div class="amount income" id="totalIncome">0₫</div>
+      </div>
+      <div class="summary-card">
+        <h3>Tổng chi tiêu</h3>
+        <div class="amount expense" id="totalExpense">0₫</div>
+      </div>
+      <div class="summary-card">
+        <h3>Số dư hiện tại</h3>
+        <div class="amount" id="currentBalance">0₫</div>
+      </div>
+    </section>
+
+    <!-- BIỂU ĐỒ -->
+    <section class="chart-container combined-charts">
+      <div class="chart-wrapper">
+        <canvas id="cashflowChart"></canvas>
+      </div>
+      <div class="chart-wrapper">
+        <canvas id="categoryChart"></canvas>
+      </div>
+    </section>
+
+    <!-- DANH SÁCH GIAO DỊCH -->
+    <section class="transactions-list">
+      <div class="transaction-item header">
+        <div>Ngày</div>
+        <div>Danh mục</div>
+        <div>Ghi chú</div>
+        <div>Số tiền</div>
+      </div>
+      <div id="transactionsContainer">
+        <!-- Danh sách giao dịch sẽ render bằng JS -->
+      </div>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

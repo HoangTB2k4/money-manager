@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Money Manager - Đăng Nhập & Đăng Ký</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-content">
+      <div class="logo">💰 Money Manager</div>
+      <div class="nav-links">
+        <a href="index.html">Trang chủ</a>
+        <a href="news.html">Tin tức</a>
+        <a href="auth.html" id="loginLink">Đăng nhập</a>   
+        <button id="logoutBtn" class="btn btn-secondary" style="display:none">Đăng xuất</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container auth-container">
+    <!-- Form đăng nhập -->
+    <div class="auth-box" id="loginBox">
+      <h2>Đăng Nhập</h2>
+      <form id="loginForm">
+        <div class="form-group">
+          <label for="loginEmail">Email</label>
+          <input type="email" class="form-input" id="loginEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="loginPassword">Mật khẩu</label>
+          <input type="password" class="form-input" id="loginPassword" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Đăng nhập</button>
+      </form>
+      <p class="auth-switch">Chưa có tài khoản? <a href="#" onclick="toggleAuthMode()">Đăng ký</a></p>
+    </div>
+
+    <!-- Form đăng ký -->
+    <div class="auth-box" id="registerBox" style="display: none;">
+      <h2>Đăng Ký</h2>
+      <form id="registerForm">
+        <div class="form-group">
+          <label for="fullname">Họ và tên</label>
+          <input type="text" class="form-input" id="fullname" required>
+        </div>
+        <div class="form-group">
+          <label for="registerEmail">Email</label>
+          <input type="email" class="form-input" id="registerEmail" required>
+        </div>
+        <div class="form-group">
+          <label for="registerPassword">Mật khẩu</label>
+          <input type="password" class="form-input" id="registerPassword" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Đăng ký</button>
+      </form>
+      <p class="auth-switch">Đã có tài khoản? <a href="#" onclick="toggleAuthMode()">Đăng nhập</a></p>
+    </div>
+  </div>
+
+  <script>
+    // Chuyển đổi giữa form đăng nhập và đăng ký
+    function toggleAuthMode() {
+      const loginBox = document.getElementById('loginBox');
+      const registerBox = document.getElementById('registerBox');
+      if (registerBox.style.display === 'none') {
+        registerBox.style.display = 'block';
+        loginBox.style.display = 'none';
+      } else {
+        registerBox.style.display = 'none';
+        loginBox.style.display = 'block';
+      }
+    }
+
+    // Xử lý đăng ký
+    document.getElementById('registerForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const fullName = document.getElementById('fullname').value;
+      const email = document.getElementById('registerEmail').value;
+      const password = document.getElementById('registerPassword').value;
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ fullName, email, password })
+        });
+        if (res.ok) {
+          alert('Đăng ký thành công! Vui lòng đăng nhập.');
+          toggleAuthMode(); // Chuyển về form đăng nhập
+        } else {
+          const err = await res.json();
+          alert('Lỗi đăng ký: ' + (err.error || res.statusText));
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Lỗi kết nối đến server.');
+      }
+    });
+
+    // Xử lý đăng nhập
+    document.getElementById('loginForm').addEventListener('submit', async function(event) {
+      event.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        if (res.ok) {
+          const data = await res.json();
+          // Lưu userId vào localStorage để sử dụng cho giao dịch
+          localStorage.setItem('userId', data.user.id);
+          localStorage.setItem('fullName', data.user.fullName);
+          alert('Đăng nhập thành công!');
+          window.location.href = 'index.html';
+        } else {
+          const err = await res.json();
+          alert('Lỗi đăng nhập: ' + (err.error || res.statusText));
+        }
+      } catch (error) {
+        console.error(error);
+        alert('Lỗi kết nối đến server.');
+      }
+    });
+  </script>
+</body>
+</html>

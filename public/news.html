@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tin tức tài chính</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-content">
+      <div class="logo">📰 Tin tức</div>
+      <div class="nav-links">
+        <a href="index.html">Trang chủ</a>
+        <a href="news.html" class="active">Tin tức</a>
+        <a href="auth.html" id="loginLink">Đăng nhập</a>   
+        <button id="logoutBtn" class="btn btn-secondary" style="display:none">Đăng xuất</button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <h2 style="margin: 1rem 0;">Tin tức mới nhất từ VnExpress Kinh Doanh</h2>
+    <section class="news-feed" id="rssContainer">
+      <p>Đang tải tin tức...</p>
+    </section>
+  </div>
+
+  <script>
+    
+    document.addEventListener('DOMContentLoaded', () => {
+  
+  const loginLink = document.getElementById('loginLink');
+  const logoutBtn = document.getElementById('logoutBtn');
+  const fullName = localStorage.getItem('fullName');
+
+  if (fullName) {
+    // Đã đăng nhập → hiện tên và nút Đăng xuất
+    loginLink.textContent = fullName;
+    loginLink.removeAttribute('href');          // nếu không cần click vào
+    logoutBtn.style.display = 'inline-block';
+  } else {
+    // Chưa đăng nhập → hiện link Đăng nhập
+    loginLink.textContent = 'Đăng nhập';
+    loginLink.href = 'auth.html';
+    logoutBtn.style.display = 'none';
+  }
+
+  // Bắt sự kiện Đăng xuất
+  logoutBtn.addEventListener('click', () => {
+    localStorage.removeItem('userId');
+    localStorage.removeItem('fullName');
+    window.location.reload();
+  });
+});
+
+    fetch('/api/news/rss')
+      .then(res => res.json())
+      .then(data => {
+        const container = document.getElementById('rssContainer');
+        container.innerHTML = '';
+
+        data.forEach(item => {
+          const article = document.createElement('article');
+          article.className = 'news-item';
+          article.innerHTML = `
+            <h3><a href="${item.link}" target="_blank">${item.title}</a></h3>
+            <p>${item.contentSnippet || ''}</p>
+            <hr />
+          `;
+          container.appendChild(article);
+        });
+      })
+      .catch(err => {
+        document.getElementById('rssContainer').innerHTML = '<p>Không thể tải tin tức.</p>';
+        console.error(err);
+      });
+  </script>
+</body>
+</html>
