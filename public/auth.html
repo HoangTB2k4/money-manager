@@ -114,7 +114,6 @@
           // Lưu userId vào localStorage để sử dụng cho giao dịch
           localStorage.setItem('userId', data.user.id);
           localStorage.setItem('fullName', data.user.fullName);
-          alert('Đăng nhập thành công!');
           window.location.href = 'index.html';
         } else {
           const err = await res.json();

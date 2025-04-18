@@ -294,11 +294,6 @@ function renderCharts(transactions) {
     }
   });
 }
-function logout() {
-  localStorage.removeItem('userId');
-  alert('Đã đăng xuất. Dữ liệu sẽ hiển thị mặc định.');
-  window.location.reload();
-}
 
 document.addEventListener('DOMContentLoaded', () => {
   // Khởi tạo dropdown tháng/năm và load giao dịch
