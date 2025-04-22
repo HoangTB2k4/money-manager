@@ -280,7 +280,7 @@ function renderCharts(transactions) {
     },
     options: {
       responsive: true,
-      maintainAspectRatio: false, // Tương tự cho biểu đồ tròn
+      maintainAspectRatio: false,
       plugins: {
         title: {
           display: true,
@@ -289,10 +289,22 @@ function renderCharts(transactions) {
         },
         legend: {
           position: 'bottom'
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const label = context.label || '';
+              const value = context.parsed;
+              const total = context.dataset.data.reduce((sum, v) => sum + v, 0);
+              const percent = ((value / total) * 100).toFixed(1);
+              return `${label}: ${value.toLocaleString()}₫ (${percent}%)`;
+            }
+          }
         }
       }
     }
   });
+  
 }
 
 document.addEventListener('DOMContentLoaded', () => {
